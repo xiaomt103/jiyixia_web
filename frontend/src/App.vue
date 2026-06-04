@@ -1,25 +1,35 @@
 <template>
-  <main class="shell">
-    <header class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Member System</p>
-        <h1>记一下会员管理系统</h1>
-        <p>面向用户申请、后台审核、套餐管理与数据导出的现代化会员运营工作台。</p>
-        <div class="hero-stats">
-          <span><b>{{ plans.length }}</b> 套餐</span>
-          <span><b>CSV</b> 数据导出</span>
-          <span><b>API</b> 可扩展</span>
-        </div>
-      </div>
-      <nav class="tabs">
-        <button :class="{ active: tab === 'user' }" @click="tab = 'user'">用户端</button>
-        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'">后台管理端</button>
+  <main class="app-frame">
+    <aside class="sidebar">
+      <div class="brand-mark"><span>记</span><div><strong>JiYiXia</strong><small>Membership OS</small></div></div>
+      <nav class="side-nav">
+        <button :class="{ active: tab === 'user' }" @click="tab = 'user'"><span>✦</span>用户门户</button>
+        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'"><span>▦</span>运营后台</button>
       </nav>
-    </header>
+      <div class="sidebar-card">
+        <small>当前能力</small>
+        <strong>{{ plans.length }} 个套餐 · CSV 导出</strong>
+        <p>支持用户申请、后台审核、状态管理和开放 API。</p>
+      </div>
+    </aside>
 
-    <section v-if="message" class="message">{{ message }}</section>
-    <UserPortal v-if="tab === 'user'" :plans="plans" @created="onMemberCreated" />
-    <AdminPortal v-else :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SaaS Enterprise Console</p>
+          <h1>{{ tab === 'user' ? '会员申请工作台' : '会员运营管理' }}</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="env-pill">Vercel Demo</span>
+          <span class="search-box">⌘K 搜索会员 / 套餐</span>
+          <span class="avatar">YX</span>
+        </div>
+      </header>
+
+      <section v-if="message" class="message">{{ message }}</section>
+      <UserPortal v-if="tab === 'user'" :plans="plans" @created="onMemberCreated" />
+      <AdminPortal v-else :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
+    </section>
   </main>
 </template>
 
@@ -29,7 +39,7 @@ import { api } from './api'
 import AdminPortal from './components/AdminPortal.vue'
 import UserPortal from './components/UserPortal.vue'
 
-const tab = ref('user')
+const tab = ref('admin')
 const plans = ref([])
 const message = ref('')
 
@@ -45,6 +55,7 @@ async function loadPlans() {
 
 function onMemberCreated(member) {
   notice(`申请已提交，会员编号：${member.id}`)
+  tab.value = 'admin'
 }
 
 function notice(text) {
