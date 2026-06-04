@@ -1,34 +1,34 @@
 <template>
-  <main class="app-frame">
-    <aside class="sidebar">
-      <div class="brand-mark"><span>记</span><div><strong>JiYiXia</strong><small>Membership OS</small></div></div>
-      <nav class="side-nav">
-        <button :class="{ active: tab === 'user' }" @click="tab = 'user'"><span>✦</span>用户门户</button>
-        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'"><span>▦</span>运营后台</button>
+  <main class="suite-shell">
+    <aside class="nav-rail">
+      <div class="brand-lockup"><span>记</span><div><b>JiYiXia</b><small>MemberOps Suite</small></div></div>
+      <nav class="nav-stack">
+        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'"><i>01</i><span>运营总览</span></button>
+        <button :class="{ active: tab === 'user' }" @click="tab = 'user'"><i>02</i><span>会员录入</span></button>
       </nav>
-      <div class="sidebar-card">
-        <small>当前能力</small>
-        <strong>{{ plans.length }} 个套餐 · CSV 导出</strong>
-        <p>支持用户申请、后台审核、状态管理和开放 API。</p>
+      <div class="rail-insight">
+        <p>今日工作流</p>
+        <strong>申请 → 审核 → 激活 → 导出</strong>
+        <small>Vercel Demo / API Ready</small>
       </div>
     </aside>
 
-    <section class="workspace">
-      <header class="topbar">
+    <section class="console">
+      <header class="command-bar">
         <div>
-          <p class="eyebrow">SaaS Enterprise Console</p>
-          <h1>{{ tab === 'user' ? '会员申请工作台' : '会员运营管理' }}</h1>
+          <p class="overline">SaaS Enterprise Console</p>
+          <h1>{{ tab === 'admin' ? '会员运营指挥台' : '会员开户注册台' }}</h1>
         </div>
-        <div class="topbar-actions">
-          <span class="env-pill">Vercel Demo</span>
-          <span class="search-box">⌘K 搜索会员 / 套餐</span>
-          <span class="avatar">YX</span>
+        <div class="command-actions">
+          <span class="status-chip">Live Demo</span>
+          <span class="shortcut">⌘ K / Search</span>
+          <span class="user-chip">YX</span>
         </div>
       </header>
 
-      <section v-if="message" class="message">{{ message }}</section>
-      <UserPortal v-if="tab === 'user'" :plans="plans" @created="onMemberCreated" />
-      <AdminPortal v-else :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
+      <section v-if="message" class="toast">{{ message }}</section>
+      <AdminPortal v-if="tab === 'admin'" :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
+      <UserPortal v-else :plans="plans" @created="onMemberCreated" />
     </section>
   </main>
 </template>
@@ -54,7 +54,7 @@ async function loadPlans() {
 }
 
 function onMemberCreated(member) {
-  notice(`申请已提交，会员编号：${member.id}`)
+  notice(`申请已进入审核队列，会员编号：${member.id}`)
   tab.value = 'admin'
 }
 
