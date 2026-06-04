@@ -98,3 +98,22 @@ input:focus,select:focus { border-color:var(--brand); box-shadow:0 0 0 3px rgba(
 .finance-strip b { display:block; margin-top:6px; font-size:24px; color:var(--brand); }
 .settings-list { grid-template-columns:repeat(3,minmax(0,1fr)); }
 @media (max-width:1100px) { .dashboard-grid,.schedule-board,.kanban-board,.campaign-grid,.finance-strip,.settings-list { grid-template-columns:1fr; } }
+.user-hero { display:flex; justify-content:space-between; gap:24px; padding:24px; margin-bottom:18px; border:1px solid var(--line); border-radius:4px; background:linear-gradient(135deg,#ffffff,#f4fbfb); }
+.eyebrow { margin:0 0 8px; color:var(--brand); font-size:12px; font-weight:700; letter-spacing:.08em; }
+.hero-metrics { display:grid; grid-template-columns:auto auto; gap:6px 12px; align-content:center; min-width:220px; padding:14px 18px; border:1px solid var(--line); border-radius:4px; background:white; }
+.hero-metrics b { color:var(--brand); }
+.hero-metrics small { color:var(--muted); }
+.journey,.pipeline-grid,.node-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-bottom:18px; }
+.journey article,.node-strip article,.pipeline-card { display:grid; gap:6px; padding:14px 16px; border:1px solid var(--line); border-radius:4px; background:white; text-align:left; }
+.journey article { border-left:4px solid var(--brand); }
+.section-head { display:grid; gap:4px; }
+.section-head small,.empty-note { color:var(--muted); }
+.empty-note { margin-top:14px; padding:12px; border:1px dashed var(--line); border-radius:4px; background:#fbfdff; }
+.pipeline-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.pipeline-card strong { font-size:26px; color:var(--brand); }
+.pipeline-card:hover { border-color:var(--brand); background:#fbffff; }
+.admin-grid { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:20px; }
+.admin-aside,.queue-panel p,.plan-panel p { display:grid; gap:12px; }
+.queue-panel p,.plan-panel p { margin:0; padding:12px; border:1px solid var(--line); border-radius:4px; background:#fbfdff; }
+.queue-panel p button { justify-self:start; padding:5px 10px; border:1px solid var(--brand); border-radius:4px; color:var(--brand); background:white; }
+@media (max-width:1100px) { .user-hero,.admin-grid { display:grid; grid-template-columns:1fr; } .pipeline-grid,.journey,.node-strip { grid-template-columns:1fr; } }
