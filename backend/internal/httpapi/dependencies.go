@@ -13,6 +13,9 @@ type MemberStore interface {
 	GetMember(context.Context, int64) (store.Member, error)
 	ListMembers(context.Context, string) ([]store.Member, error)
 	UpdateMemberStatus(context.Context, int64, string) (store.Member, error)
+	ListOperations(context.Context, string) ([]store.OperationRecord, error)
+	CreateOperation(context.Context, store.CreateOperationInput) (store.OperationRecord, error)
+	UpdateOperationStatus(context.Context, int64, string) (store.OperationRecord, error)
 }
 
 type SessionManager interface {

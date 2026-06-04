@@ -5,7 +5,7 @@
 ## 功能
 
 - 用户端：查看会员套餐、提交会员注册、查询会员状态。
-- 后台管理端：管理员登录、会员管理、状态控制、套餐管理。
+- 后台管理端：管理员登录、会员管理、状态控制、套餐管理、预约/订单/营销/财务/报表模块台账。
 - API：`/api/v1/admin/*` 暴露后台控制接口，使用 Bearer Token 认证。
 - 基础设施：Docker Compose 一键启动 Go API、Vue 前端、PostgreSQL、Redis。
 
@@ -45,6 +45,9 @@ docker compose up --build
 - `PATCH /api/v1/admin/members/{id}/status` 更新会员状态
 - `GET /api/v1/admin/plans` 套餐列表
 - `POST /api/v1/admin/plans` 创建套餐
+- `GET /api/v1/admin/operations?module=booking` 业务模块台账
+- `POST /api/v1/admin/operations` 创建预约/订单/营销/财务/报表记录
+- `PATCH /api/v1/admin/operations/{id}/status` 更新业务记录状态
 
 ## Vercel 部署
 

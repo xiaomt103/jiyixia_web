@@ -38,3 +38,23 @@ type CreatePlanInput struct {
 	DurationDay int    `json:"duration_days"`
 	Description string `json:"description"`
 }
+
+type OperationRecord struct {
+	ID        int64     `json:"id"`
+	Module    string    `json:"module"`
+	Title     string    `json:"title"`
+	MemberID  int64     `json:"member_id,omitempty"`
+	Amount    int       `json:"amount_cents"`
+	Status    string    `json:"status"`
+	DueAt     time.Time `json:"due_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type CreateOperationInput struct {
+	Module   string `json:"module"`
+	Title    string `json:"title"`
+	MemberID int64  `json:"member_id"`
+	Amount   int    `json:"amount_cents"`
+	Status   string `json:"status"`
+	DueAt    string `json:"due_at"`
+}

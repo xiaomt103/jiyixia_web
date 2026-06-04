@@ -85,6 +85,34 @@ async function handleDemo(req, res) {
     sendJSON(res, 200, state.plans)
     return
   }
+  if (req.method === 'GET' && path === '/api/v1/admin/operations') {
+    const module = url.searchParams.get('module')
+    sendJSON(res, 200, module ? state.operations.filter(item => item.module === module) : state.operations)
+    return
+  }
+  if (req.method === 'POST' && path === '/api/v1/admin/operations') {
+    const input = await parseJSON(req)
+    if (!input.module || !input.title) {
+      sendJSON(res, 400, { error: 'invalid operation input' })
+      return
+    }
+    const record = createOperation(input)
+    state.operations.unshift(record)
+    sendJSON(res, 201, record)
+    return
+  }
+  if (req.method === 'PATCH' && path.startsWith('/api/v1/admin/operations/') && path.endsWith('/status')) {
+    const id = path.replace('/api/v1/admin/operations/', '').replace('/status', '')
+    const record = findByID(state.operations, id)
+    const input = await parseJSON(req)
+    if (!record || !input.status) {
+      sendJSON(res, record ? 400 : 404, { error: record ? 'invalid status' : 'operation not found' })
+      return
+    }
+    record.status = input.status
+    sendJSON(res, 200, record)
+    return
+  }
   if (req.method === 'POST' && path === '/api/v1/admin/plans') {
     const input = await parseJSON(req)
     if (!input.name || Number(input.duration_days) <= 0 || Number(input.price_cents) < 0) {
@@ -167,17 +195,33 @@ function seedState() {
   return {
     planSeq: 3,
     memberSeq: 1,
+    operationSeq: 6,
     plans: [
       plan(1, '月度会员', 9900, 30, '适合短期体验', createdAt),
       plan(2, '季度会员', 26900, 90, '适合稳定使用', createdAt),
       plan(3, '年度会员', 99900, 365, '全年权益优惠', createdAt)
     ],
-    members: []
+    members: [],
+    operations: [
+      operation(1, 'booking', '明天 10:30 到店预约', 0, 0, 'pending', createdAt),
+      operation(2, 'order', '年度会员订单待确认', 0, 99900, 'pending', createdAt),
+      operation(3, 'marketing', '六月续费提醒活动', 0, 0, 'active', createdAt),
+      operation(4, 'finance', '会员收入日报', 0, 101170, 'done', createdAt),
+      operation(5, 'report', '经营分析月报', 0, 0, 'ready', createdAt)
+    ]
   }
 }
 
 function plan(id, name, price, days, description, createdAt) {
   return { id, name, price_cents: price, duration_days: days, description, created_at: createdAt }
+}
+
+function operation(id, module, title, memberID, amount, status, dueAt) {
+  return { id, module, title, member_id: memberID, amount_cents: amount, status, due_at: dueAt, created_at: dueAt }
+}
+
+function createOperation(input) {
+  return operation(++state.operationSeq, input.module, input.title.trim(), Number(input.member_id || 0), Number(input.amount_cents || 0), input.status || 'pending', input.due_at || new Date().toISOString())
 }
 
 function createPlan(input) {

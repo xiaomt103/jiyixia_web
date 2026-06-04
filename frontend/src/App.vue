@@ -15,7 +15,7 @@
         <section v-if="message" class="toast">{{ message }}</section>
         <AdminPortal v-if="tab === 'admin'" :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
         <UserPortal v-else-if="tab === 'user'" :plans="plans" @created="onMemberCreated" />
-        <section v-else class="empty-page">该模块已预留，后续可接入更多业务能力。</section>
+        <OperationsPortal v-else :module="tab" @notice="notice" />
       </section>
     </div>
   </main>
@@ -26,21 +26,23 @@ import { computed, onMounted, ref } from 'vue'
 import { api } from './api'
 import AdminPortal from './components/AdminPortal.vue'
 import UserPortal from './components/UserPortal.vue'
+import OperationsPortal from './components/OperationsPortal.vue'
 
 const tab = ref('admin')
 const plans = ref([])
 const message = ref('')
 const navItems = [
-  { key: 'dashboard', label: '总览', icon: '◌', disabled: true },
-  { key: 'booking', label: '预约', icon: '◷', disabled: true },
-  { key: 'order', label: '订单', icon: '▤', disabled: true },
+  { key: 'dashboard', label: '总览', icon: '◌' },
+  { key: 'booking', label: '预约', icon: '◷' },
+  { key: 'order', label: '订单', icon: '▤' },
   { key: 'admin', label: '数据', icon: '◕' },
   { key: 'user', label: '会员', icon: '♙' },
-  { key: 'marketing', label: '营销', icon: '⌁', disabled: true },
-  { key: 'finance', label: '财务', icon: '￥', disabled: true },
-  { key: 'settings', label: '设置', icon: '⚙', disabled: true }
+  { key: 'marketing', label: '营销', icon: '⌁' },
+  { key: 'finance', label: '财务', icon: '￥' },
+  { key: 'settings', label: '设置', icon: '⚙' }
 ]
-const currentTitle = computed(() => tab.value === 'admin' ? '数据（会员版）' : '会员录入')
+const titles = { admin: '数据（会员版）', user: '会员录入', dashboard: '总览', booking: '预约', order: '订单', marketing: '营销', finance: '财务', settings: '设置' }
+const currentTitle = computed(() => titles[tab.value] || '业务模块')
 
 onMounted(loadPlans)
 

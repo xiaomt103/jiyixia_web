@@ -82,6 +82,40 @@ paths:
             schema: { $ref: '#/components/schemas/CreatePlan' }
       responses:
         '201': { description: 套餐已创建 }
+
+  /v1/admin/operations:
+    get:
+      summary: 后台业务模块台账
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: module
+          in: query
+          schema: { type: string, enum: [booking, order, marketing, finance, report] }
+      responses:
+        '200': { description: 业务记录列表 }
+    post:
+      summary: 后台创建业务记录
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOperation' }
+      responses:
+        '201': { description: 业务记录已创建 }
+  /v1/admin/operations/{id}/status:
+    patch:
+      summary: 后台更新业务记录状态
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/MemberID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateStatus' }
+      responses:
+        '200': { description: 业务记录状态已更新 }
 components:
   securitySchemes:
     bearerAuth:
@@ -116,6 +150,16 @@ components:
         price_cents: { type: integer, minimum: 0 }
         duration_days: { type: integer, minimum: 1 }
         description: { type: string }
+    CreateOperation:
+      type: object
+      required: [module, title]
+      properties:
+        module: { type: string, enum: [booking, order, marketing, finance, report] }
+        title: { type: string }
+        member_id: { type: integer, format: int64 }
+        amount_cents: { type: integer, minimum: 0 }
+        status: { type: string }
+        due_at: { type: string, format: date-time }
     UpdateStatus:
       type: object
       required: [status]

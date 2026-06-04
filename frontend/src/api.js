@@ -37,7 +37,14 @@ export const api = {
   adminPlans: async (token) => mergeDemoPlans(await request('/api/v1/admin/plans', { headers: authHeader(token) })),
   createPlan: async (token, payload) => saveDemoPlan(await request('/api/v1/admin/plans', {
     method: 'POST', headers: authHeader(token), body: JSON.stringify(payload)
-  }))
+  })),
+  operations: (token, module) => request(`/api/v1/admin/operations${module ? `?module=${module}` : ''}`, { headers: authHeader(token) }),
+  createOperation: (token, payload) => request('/api/v1/admin/operations', {
+    method: 'POST', headers: authHeader(token), body: JSON.stringify(payload)
+  }),
+  updateOperationStatus: (token, id, status) => request(`/api/v1/admin/operations/${id}/status`, {
+    method: 'PATCH', headers: authHeader(token), body: JSON.stringify({ status })
+  })
 }
 
 function requestBody(payload) {

@@ -95,6 +95,18 @@ func (fakeStore) UpdateMemberStatus(_ context.Context, id int64, status string) 
 	return member, nil
 }
 
+func (fakeStore) ListOperations(context.Context, string) ([]store.OperationRecord, error) {
+	return []store.OperationRecord{{ID: 1, Module: "booking", Title: "到店预约", Status: "pending"}}, nil
+}
+
+func (fakeStore) CreateOperation(_ context.Context, input store.CreateOperationInput) (store.OperationRecord, error) {
+	return store.OperationRecord{ID: 2, Module: input.Module, Title: input.Title, Status: input.Status}, nil
+}
+
+func (fakeStore) UpdateOperationStatus(_ context.Context, id int64, status string) (store.OperationRecord, error) {
+	return store.OperationRecord{ID: id, Module: "booking", Title: "到店预约", Status: status}, nil
+}
+
 func testMember() store.Member {
 	now := time.Date(2026, 6, 3, 8, 0, 0, 0, time.UTC)
 	return store.Member{ID: 1, Name: "Alice", Phone: "13800000000", Email: "alice@example.com", PlanID: 1, PlanName: "月度会员", Status: "active", CreatedAt: now, UpdatedAt: now}

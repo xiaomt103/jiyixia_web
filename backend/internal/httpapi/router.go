@@ -35,6 +35,12 @@ func (a *API) adminRouter(w http.ResponseWriter, r *http.Request) {
 		a.listPlans(w, r)
 	case r.Method == http.MethodPost && r.URL.Path == "/api/v1/admin/plans":
 		a.createPlan(w, r)
+	case r.Method == http.MethodGet && r.URL.Path == "/api/v1/admin/operations":
+		a.listOperations(w, r)
+	case r.Method == http.MethodPost && r.URL.Path == "/api/v1/admin/operations":
+		a.createOperation(w, r)
+	case r.Method == http.MethodPatch && strings.HasPrefix(r.URL.Path, "/api/v1/admin/operations/") && strings.HasSuffix(r.URL.Path, "/status"):
+		a.updateOperationStatus(w, r)
 	default:
 		writeError(w, http.StatusNotFound, "not found")
 	}
