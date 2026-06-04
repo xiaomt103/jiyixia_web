@@ -17,9 +17,9 @@
 API_BASE_URL=https://你的-api-域名
 ```
 
-Vercel 会通过 `/api/*` Serverless Function 把请求代理到 `API_BASE_URL`，例如 `/api/admin/login` 会转发到 `https://你的-api-域名/api/admin/login`。这样浏览器仍访问同域 `/api`，不需要额外处理 CORS。
+Vercel 会通过根目录 `api/` 下的 Serverless Functions 处理 `/api/*` 请求，并把请求代理到 `API_BASE_URL`，例如 `/api/admin/login` 会转发到 `https://你的-api-域名/api/admin/login`。这样浏览器仍访问同域 `/api`，不需要额外处理 CORS。
 
-请不要把 `API_BASE_URL` 设置成当前 Vercel 站点域名（例如 `https://jiyixia-web.vercel.app`），否则代理会请求自己并形成循环。本项目已内置保护：当 `API_BASE_URL` 未配置或指向当前 Vercel 域名时，`/api/*` 会进入临时演示模式，返回内置套餐并支持默认后台登录，便于先查看页面效果。
+请不要把 `API_BASE_URL` 设置成当前 Vercel 站点域名（例如 `https://jiyixia-web.vercel.app`），否则代理会请求自己并形成循环。本项目已内置保护：当 `API_BASE_URL` 未配置或指向当前 Vercel 域名时，`/api/*` 会进入临时演示模式，返回内置套餐并支持默认后台登录，便于先查看页面效果。项目同时提供显式函数文件（例如 `api/admin/login.js`、`api/plans.js`），避免 catch-all API 在部分 Vercel 配置下没有被部署而导致 404。
 
 如果你希望浏览器直接请求后端域名，也可以设置 `VITE_API_BASE_URL=https://你的-api-域名`，但这要求后端正确允许 Vercel 域名的 CORS。
 
