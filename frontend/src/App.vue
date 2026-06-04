@@ -1,0 +1,49 @@
+<template>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Member System</p>
+        <h1>记一下会员管理系统</h1>
+        <p>用户端提交会员申请，后台管理端统一审核、激活与套餐扩展。</p>
+      </div>
+      <nav>
+        <button :class="{ active: tab === 'user' }" @click="tab = 'user'">用户端</button>
+        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'">后台管理端</button>
+      </nav>
+    </header>
+
+    <section v-if="message" class="message">{{ message }}</section>
+    <UserPortal v-if="tab === 'user'" :plans="plans" @created="onMemberCreated" />
+    <AdminPortal v-else :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
+  </main>
+</template>
+
+<script setup>
+import { onMounted, ref } from 'vue'
+import { api } from './api'
+import AdminPortal from './components/AdminPortal.vue'
+import UserPortal from './components/UserPortal.vue'
+
+const tab = ref('user')
+const plans = ref([])
+const message = ref('')
+
+onMounted(loadPlans)
+
+async function loadPlans() {
+  try {
+    plans.value = await api.plans()
+  } catch (error) {
+    notice(error.message)
+  }
+}
+
+function onMemberCreated(member) {
+  notice(`申请已提交，会员编号：${member.id}`)
+}
+
+function notice(text) {
+  message.value = text
+  setTimeout(() => (message.value = ''), 3500)
+}
+</script>

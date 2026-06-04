@@ -1,0 +1,123 @@
+openapi: 3.0.3
+info:
+  title: 记一下会员管理系统 API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080/api
+paths:
+  /health:
+    get:
+      summary: 健康检查
+      responses:
+        '200': { description: 服务可用 }
+  /plans:
+    get:
+      summary: 用户端套餐列表
+      responses:
+        '200': { description: 套餐列表 }
+  /members:
+    post:
+      summary: 用户端创建会员申请
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateMember' }
+      responses:
+        '201': { description: 会员申请已创建 }
+  /members/{id}:
+    get:
+      summary: 用户端查询会员
+      parameters:
+        - $ref: '#/components/parameters/MemberID'
+      responses:
+        '200': { description: 会员信息 }
+        '404': { description: 会员不存在 }
+  /admin/login:
+    post:
+      summary: 后台登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Login' }
+      responses:
+        '200': { description: 返回 Bearer token }
+  /v1/admin/members:
+    get:
+      summary: 后台会员列表
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, active, paused, expired, cancelled] }
+      responses:
+        '200': { description: 会员列表 }
+  /v1/admin/members/{id}/status:
+    patch:
+      summary: 后台更新会员状态
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/MemberID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateStatus' }
+      responses:
+        '200': { description: 会员状态已更新 }
+  /v1/admin/plans:
+    get:
+      summary: 后台套餐列表
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: 套餐列表 }
+    post:
+      summary: 后台创建套餐
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePlan' }
+      responses:
+        '201': { description: 套餐已创建 }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    MemberID:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+  schemas:
+    Login:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string }
+        password: { type: string }
+    CreateMember:
+      type: object
+      required: [name, phone, email, plan_id]
+      properties:
+        name: { type: string }
+        phone: { type: string }
+        email: { type: string, format: email }
+        plan_id: { type: integer, format: int64 }
+    CreatePlan:
+      type: object
+      required: [name, price_cents, duration_days]
+      properties:
+        name: { type: string }
+        price_cents: { type: integer, minimum: 0 }
+        duration_days: { type: integer, minimum: 1 }
+        description: { type: string }
+    UpdateStatus:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [pending, active, paused, expired, cancelled] }
