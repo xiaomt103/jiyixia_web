@@ -34,4 +34,4 @@ vercel --prod
 
 ## 完整后端能力
 
-Vercel 前端部署不会运行本项目的 Go API，也不会启动 PostgreSQL/Redis。内置演示模式仅使用 Serverless Function 的临时内存数据，适合验证页面和登录流程，不适合作为真实业务数据存储。完整会员管理功能需要先部署后端，然后把 Vercel 环境变量 `API_BASE_URL` 指向后端域名。
+Vercel 前端部署不会运行本项目的 Go API，也不会启动 PostgreSQL/Redis，因此默认没有可持久化的 psql 数据库。内置演示模式仅适合验证页面和登录流程：Serverless Function 内存可能随实例变化而丢失，前端会把当前浏览器提交的 demo 会员/套餐同步到 `localStorage`，让同一浏览器里的后台管理端可以看到刚提交的用户数据。不同浏览器、不同设备或重新部署后不能依赖这些 demo 数据。完整会员管理功能需要先部署后端和 PostgreSQL/Redis，然后把 Vercel 环境变量 `API_BASE_URL` 指向后端域名。
