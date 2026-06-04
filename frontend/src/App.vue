@@ -28,7 +28,7 @@ import AdminPortal from './components/AdminPortal.vue'
 import UserPortal from './components/UserPortal.vue'
 import OperationsPortal from './components/OperationsPortal.vue'
 
-const tab = ref('admin')
+const tab = ref('dashboard')
 const plans = ref([])
 const message = ref('')
 const navItems = [

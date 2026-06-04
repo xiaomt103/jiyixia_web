@@ -6,12 +6,17 @@
     <section class="node-strip"><article v-for="node in config.nodes" :key="node.title"><b>{{ node.title }}</b><span>{{ node.text }}</span></article></section>
 
     <template v-if="module === 'dashboard'">
-      <section v-if="activeTab === '数据总览'" class="dashboard-grid">
-        <article class="report-card"><div class="report-title"><div><h2>经营摘要</h2><small>按当前时间范围聚合各模块记录。</small></div></div><div class="summary-list"><p v-for="item in moduleCounts" :key="item.label"><span>{{ item.label }}</span><b>{{ item.value }}</b></p></div></article>
-        <article class="report-card"><div class="report-title"><div><h2>待办队列</h2><small>最近待处理事项优先展示。</small></div></div><ul class="timeline"><li v-for="item in visibleRecords.slice(0, 5)" :key="item.id"><b>{{ item.title }}</b><span>{{ item.module }} · {{ item.status }}</span></li></ul></article>
+      <section class="dashboard-hero"><div class="store-mark">大</div><div><p>全局经营驾驶舱</p><h2>大囍·美学</h2><span>{{ activeTab }} · {{ activePeriod }} · {{ rangeText }}</span></div><select><option>大囍·美学</option></select></section>
+      <section v-if="activeTab === '数据总览'" class="overview-board">
+        <article class="kpi-card" v-for="item in dashboardKpis" :key="item.label"><span>{{ item.label }}</span><b>{{ item.value }}</b><small>{{ item.delta }}</small></article>
+        <article class="composition-card"><h3>业绩构成</h3><div class="mini-bars"><p v-for="item in moduleCounts.slice(0, 4)" :key="item.label"><span>{{ item.label }}</span><i :style="{ width: `${Math.max(item.value, 1) * 18}px` }"></i><b>{{ item.value }}</b></p></div></article>
+        <article class="donut-card"><h3>客户占比</h3><div class="donut"><b>{{ percent(byStatus('done').length, visibleRecords.length) }}</b></div><p><span>完成</span><span>进行中</span><span>待处理</span></p></article>
+        <aside class="insight-rail"><div class="ai-card"><b>JiYiXia AI 运营助手</b><span>基于当前范围生成提醒、报表和转化建议。</span></div><h3>产品动态</h3><p v-for="item in dynamics" :key="item.date"><b>{{ item.date }}</b>{{ item.text }}</p></aside>
       </section>
       <section v-else-if="activeTab === '经营分析'" class="analysis-grid"><article v-for="item in analysisCards" :key="item.label" class="analysis-card"><span>{{ item.label }}</span><b>{{ item.value }}</b><small>{{ item.hint }}</small></article></section>
       <section v-else class="report-grid"><article v-for="item in reportCards" :key="item.title" class="report-card"><div class="report-title"><div><h2>{{ item.title }}</h2><small>{{ item.desc }}</small></div><button @click="exportReport(item.type)">生成报表</button></div></article></section>
+      <section class="reminder-strip"><h2>待办提醒</h2><article v-for="item in reminders" :key="item.label"><span>{{ item.label }}</span><b>{{ item.value }}</b></article></section>
+      <section class="service-grid"><h2>多终端服务</h2><article v-for="item in serviceCards" :key="item.title"><b>{{ item.title }}</b><span>{{ item.text }}</span></article></section>
     </template>
 
     <section v-else-if="module === 'booking'" class="schedule-board"><article v-for="slot in bookingSlots" :key="slot.time" class="slot-card"><time>{{ slot.time }}</time><b>{{ slot.title }}</b><span>{{ slot.status }}</span></article></section>
@@ -64,7 +69,11 @@ const totalAmount = computed(() => visibleRecords.value.reduce((sum, item) => su
 const metrics = computed(() => [{ label: '记录数', value: visibleRecords.value.length }, { label: '进行中', value: byStatus('active').length }, { label: '待处理', value: byStatus('pending').length }, { label: '金额', value: `¥${money(totalAmount.value)}` }])
 const moduleCounts = computed(() => ['booking', 'order', 'marketing', 'finance', 'report'].map(label => ({ label, value: visibleRecords.value.filter(item => item.module === label).length })))
 const bookingSlots = computed(() => visibleRecords.value.slice(0, 6).map((item, index) => ({ time: `${9 + index}:30`, title: item.title, status: item.status })))
+const dashboardKpis = computed(() => [{ label: '业绩金额', value: `¥${money(totalAmount.value)}`, delta: `环比 ${percent(byStatus('done').length, visibleRecords.value.length)}` }, { label: '卡耗金额', value: `¥${money(totalAmount.value * 0.42)}`, delta: '跟随完成记录计算' }, { label: '营业收入', value: `¥${money(totalAmount.value * 0.68)}`, delta: '订单与财务聚合' }, { label: '到店消费人数', value: Math.max(byStatus('done').length, 1), delta: `${byStatus('pending').length} 个待跟进` }])
+const reminders = computed(() => [{ label: '重要日期', value: visibleRecords.value.length }, { label: '3日内预约', value: moduleCounts.value.find(item => item.label === 'booking')?.value || 0 }, { label: '超45天未到店', value: byStatus('pending').length }, { label: '充值提醒', value: moduleCounts.value.find(item => item.label === 'finance')?.value || 0 }, { label: '潜在客户', value: byStatus('active').length }])
 const analysisCards = computed(() => [{ label: '完成率', value: percent(byStatus('done').length, visibleRecords.value.length), hint: '已完成 / 当前范围记录' }, { label: '待办压力', value: byStatus('pending').length, hint: '需要优先处理的事项' }, { label: '平均金额', value: `¥${money(Math.round(totalAmount.value / Math.max(visibleRecords.value.length, 1)))}`, hint: '当前范围记录均值' }])
+const dynamics = [{ date: '06/04', text: ' 总览页完成交互升级' }, { date: '05/28', text: ' 报表中心支持 CSV 导出' }, { date: '05/20', text: ' 多模块经营台账上线' }]
+const serviceCards = [{ title: '用户端申请', text: '会员提交资料和查询进度' }, { title: '后台控制', text: '审核、套餐和状态流转' }, { title: '开放 API', text: '后续模块可继续接入' }]
 const reportCards = [{ title: '经营日报', desc: '导出当前时间范围的明细台账。', type: 'records' }, { title: '模块汇总', desc: '导出各模块记录数和占比。', type: 'summary' }, { title: '经营分析', desc: '导出完成率、待办和金额分析。', type: 'analysis' }]
 
 watch(() => props.module, async () => { activeTab.value = config.value.tabs[0]; activePeriod.value = config.value.focus; await loadRecords() }, { immediate: true })
