@@ -50,7 +50,7 @@ docker compose up --build
 
 仓库根目录包含 `vercel.json`，可直接在 Vercel Dashboard 导入本仓库部署 Vue 前端。完整步骤见 [`docs/vercel.md`](docs/vercel.md)。
 
-注意：Vercel 配置只部署前端静态站点；Go API、PostgreSQL 和 Redis 仍需要部署到支持 Docker Compose 的服务器或容器平台，并在 Vercel 环境变量中设置 `VITE_API_BASE_URL`。
+注意：Vercel 配置只部署前端静态站点；Go API、PostgreSQL 和 Redis 仍需要部署到支持 Docker Compose 的服务器或容器平台，并在 Vercel 环境变量中设置 `API_BASE_URL`。
 
 ## 开发命令
 

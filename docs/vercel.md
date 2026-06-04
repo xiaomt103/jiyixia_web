@@ -14,10 +14,12 @@
 5. 如果已经有线上 API，请在 Vercel 项目的 Environment Variables 中设置：
 
 ```text
-VITE_API_BASE_URL=https://你的-api-域名
+API_BASE_URL=https://你的-api-域名
 ```
 
-如果不设置 `VITE_API_BASE_URL`，前端会继续请求同域 `/api`，这只适合本地 Docker/Nginx 或你在同域下另行配置 API 代理的场景。
+Vercel 会通过 `/api/*` Serverless Function 把请求代理到 `API_BASE_URL`，例如 `/api/admin/login` 会转发到 `https://你的-api-域名/api/admin/login`。这样浏览器仍访问同域 `/api`，不需要额外处理 CORS。
+
+如果你希望浏览器直接请求后端域名，也可以设置 `VITE_API_BASE_URL=https://你的-api-域名`，但这要求后端正确允许 Vercel 域名的 CORS。
 
 ## 通过 Vercel CLI 部署
 
@@ -30,4 +32,4 @@ vercel --prod
 
 ## 完整后端能力
 
-Vercel 静态前端部署不会运行本项目的 Go API，也不会启动 PostgreSQL/Redis。完整会员管理功能需要先部署后端，然后把 `VITE_API_BASE_URL` 指向后端域名。
+Vercel 前端部署不会运行本项目的 Go API，也不会启动 PostgreSQL/Redis。完整会员管理功能需要先部署后端，然后把 Vercel 环境变量 `API_BASE_URL` 指向后端域名。
