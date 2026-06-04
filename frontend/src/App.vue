@@ -1,42 +1,28 @@
 <template>
   <main class="app-shell">
-    <aside class="sidebar">
-      <div class="brand"><span>记</span><div><b>JiYiXia</b><small>Member Management</small></div></div>
-      <div class="nav-group">
-        <p>核心模块</p>
-        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'"><span>概览</span><small>会员 / 套餐 / 导出</small></button>
-        <button :class="{ active: tab === 'user' }" @click="tab = 'user'"><span>录入</span><small>申请 / 查询</small></button>
-      </div>
-      <div class="nav-group muted">
-        <p>后续扩展</p>
-        <button disabled><span>财务</span><small>收款与发票</small></button>
-        <button disabled><span>营销</span><small>活动与触达</small></button>
-        <button disabled><span>报表</span><small>经营分析</small></button>
-      </div>
-      <div class="sidebar-note">Demo 模式已开启；部署后端后可接入真实 PostgreSQL / Redis。</div>
-    </aside>
-
-    <section class="content">
-      <header class="topbar">
-        <div>
-          <p class="caption">SaaS 企业后台</p>
-          <h1>{{ tab === 'admin' ? '会员运营中心' : '会员录入中心' }}</h1>
-        </div>
-        <div class="top-actions">
-          <span>{{ plans.length }} 个套餐</span>
-          <span>CSV 导出</span>
-          <b>YX</b>
-        </div>
-      </header>
-      <section v-if="message" class="toast">{{ message }}</section>
-      <AdminPortal v-if="tab === 'admin'" :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
-      <UserPortal v-else :plans="plans" @created="onMemberCreated" />
-    </section>
+    <header class="global-header">
+      <div class="brand"><span>记</span><div><b>JiYiXia</b><small>MEMBER.COM</small></div></div>
+      <div class="header-tools"><span>🔎 功能搜索</span><span>🔔 消息</span><span>🎧 客服</span><b>YX</b><div><strong>运营员</strong><small>演示门店</small></div></div>
+    </header>
+    <div class="app-body">
+      <aside class="side-nav">
+        <button v-for="item in navItems" :key="item.key" :class="{ active: tab === item.key }" :disabled="item.disabled" @click="tab = item.key">
+          <span>{{ item.icon }}</span><b>{{ item.label }}</b><small v-if="item.disabled">规划中</small>
+        </button>
+      </aside>
+      <section class="workspace">
+        <div class="page-title"><h1>{{ currentTitle }}</h1><p>简洁企业后台 · 支持后续模块扩展</p></div>
+        <section v-if="message" class="toast">{{ message }}</section>
+        <AdminPortal v-if="tab === 'admin'" :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
+        <UserPortal v-else-if="tab === 'user'" :plans="plans" @created="onMemberCreated" />
+        <section v-else class="empty-page">该模块已预留，后续可接入更多业务能力。</section>
+      </section>
+    </div>
   </main>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { api } from './api'
 import AdminPortal from './components/AdminPortal.vue'
 import UserPortal from './components/UserPortal.vue'
@@ -44,6 +30,17 @@ import UserPortal from './components/UserPortal.vue'
 const tab = ref('admin')
 const plans = ref([])
 const message = ref('')
+const navItems = [
+  { key: 'dashboard', label: '总览', icon: '◌', disabled: true },
+  { key: 'booking', label: '预约', icon: '◷', disabled: true },
+  { key: 'order', label: '订单', icon: '▤', disabled: true },
+  { key: 'admin', label: '数据', icon: '◕' },
+  { key: 'user', label: '会员', icon: '♙' },
+  { key: 'marketing', label: '营销', icon: '⌁', disabled: true },
+  { key: 'finance', label: '财务', icon: '￥', disabled: true },
+  { key: 'settings', label: '设置', icon: '⚙', disabled: true }
+]
+const currentTitle = computed(() => tab.value === 'admin' ? '数据（会员版）' : '会员录入')
 
 onMounted(loadPlans)
 
