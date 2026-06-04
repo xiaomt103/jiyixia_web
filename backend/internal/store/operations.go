@@ -9,7 +9,7 @@ import (
 )
 
 var validModules = map[string]bool{
-	"booking": true, "order": true, "marketing": true, "finance": true, "report": true,
+	"booking": true, "order": true, "marketing": true, "finance": true, "report": true, "settings": true,
 }
 
 func (p *Postgres) ListOperations(ctx context.Context, module string) ([]OperationRecord, error) {

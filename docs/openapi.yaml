@@ -90,7 +90,7 @@ paths:
       parameters:
         - name: module
           in: query
-          schema: { type: string, enum: [booking, order, marketing, finance, report] }
+          schema: { type: string, enum: [booking, order, marketing, finance, report, settings] }
       responses:
         '200': { description: 业务记录列表 }
     post:
@@ -154,7 +154,7 @@ components:
       type: object
       required: [module, title]
       properties:
-        module: { type: string, enum: [booking, order, marketing, finance, report] }
+        module: { type: string, enum: [booking, order, marketing, finance, report, settings] }
         title: { type: string }
         member_id: { type: integer, format: int64 }
         amount_cents: { type: integer, minimum: 0 }
