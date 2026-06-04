@@ -19,6 +19,8 @@ API_BASE_URL=https://你的-api-域名
 
 Vercel 会通过 `/api/*` Serverless Function 把请求代理到 `API_BASE_URL`，例如 `/api/admin/login` 会转发到 `https://你的-api-域名/api/admin/login`。这样浏览器仍访问同域 `/api`，不需要额外处理 CORS。
 
+请不要把 `API_BASE_URL` 设置成当前 Vercel 站点域名（例如 `https://jiyixia-web.vercel.app`），否则代理会请求自己并形成循环。本项目已内置保护：当 `API_BASE_URL` 未配置或指向当前 Vercel 域名时，`/api/*` 会进入临时演示模式，返回内置套餐并支持默认后台登录，便于先查看页面效果。
+
 如果你希望浏览器直接请求后端域名，也可以设置 `VITE_API_BASE_URL=https://你的-api-域名`，但这要求后端正确允许 Vercel 域名的 CORS。
 
 ## 通过 Vercel CLI 部署
@@ -32,4 +34,4 @@ vercel --prod
 
 ## 完整后端能力
 
-Vercel 前端部署不会运行本项目的 Go API，也不会启动 PostgreSQL/Redis。完整会员管理功能需要先部署后端，然后把 Vercel 环境变量 `API_BASE_URL` 指向后端域名。
+Vercel 前端部署不会运行本项目的 Go API，也不会启动 PostgreSQL/Redis。内置演示模式仅使用 Serverless Function 的临时内存数据，适合验证页面和登录流程，不适合作为真实业务数据存储。完整会员管理功能需要先部署后端，然后把 Vercel 环境变量 `API_BASE_URL` 指向后端域名。
