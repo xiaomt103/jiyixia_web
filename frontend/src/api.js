@@ -1,8 +1,9 @@
 const jsonHeaders = { 'Content-Type': 'application/json' }
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 
 export async function request(path, options = {}) {
   const headers = { ...jsonHeaders, ...(options.headers || {}) }
-  const response = await fetch(path, { ...options, headers })
+  const response = await fetch(`${apiBaseUrl}${path}`, { ...options, headers })
   const data = await response.json().catch(() => ({}))
   if (!response.ok) throw new Error(data.error || '请求失败')
   return data
