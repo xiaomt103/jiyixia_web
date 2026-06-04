@@ -1,31 +1,33 @@
 <template>
-  <main class="suite-shell">
-    <aside class="nav-rail">
-      <div class="brand-lockup"><span>记</span><div><b>JiYiXia</b><small>MemberOps Suite</small></div></div>
-      <nav class="nav-stack">
-        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'"><i>01</i><span>运营总览</span></button>
-        <button :class="{ active: tab === 'user' }" @click="tab = 'user'"><i>02</i><span>会员录入</span></button>
-      </nav>
-      <div class="rail-insight">
-        <p>今日工作流</p>
-        <strong>申请 → 审核 → 激活 → 导出</strong>
-        <small>Vercel Demo / API Ready</small>
+  <main class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span>记</span><div><b>JiYiXia</b><small>Member Management</small></div></div>
+      <div class="nav-group">
+        <p>核心模块</p>
+        <button :class="{ active: tab === 'admin' }" @click="tab = 'admin'"><span>概览</span><small>会员 / 套餐 / 导出</small></button>
+        <button :class="{ active: tab === 'user' }" @click="tab = 'user'"><span>录入</span><small>申请 / 查询</small></button>
       </div>
+      <div class="nav-group muted">
+        <p>后续扩展</p>
+        <button disabled><span>财务</span><small>收款与发票</small></button>
+        <button disabled><span>营销</span><small>活动与触达</small></button>
+        <button disabled><span>报表</span><small>经营分析</small></button>
+      </div>
+      <div class="sidebar-note">Demo 模式已开启；部署后端后可接入真实 PostgreSQL / Redis。</div>
     </aside>
 
-    <section class="console">
-      <header class="command-bar">
+    <section class="content">
+      <header class="topbar">
         <div>
-          <p class="overline">SaaS Enterprise Console</p>
-          <h1>{{ tab === 'admin' ? '会员运营指挥台' : '会员开户注册台' }}</h1>
+          <p class="caption">SaaS 企业后台</p>
+          <h1>{{ tab === 'admin' ? '会员运营中心' : '会员录入中心' }}</h1>
         </div>
-        <div class="command-actions">
-          <span class="status-chip">Live Demo</span>
-          <span class="shortcut">⌘ K / Search</span>
-          <span class="user-chip">YX</span>
+        <div class="top-actions">
+          <span>{{ plans.length }} 个套餐</span>
+          <span>CSV 导出</span>
+          <b>YX</b>
         </div>
       </header>
-
       <section v-if="message" class="toast">{{ message }}</section>
       <AdminPortal v-if="tab === 'admin'" :plans="plans" @refresh-plans="loadPlans" @notice="notice" />
       <UserPortal v-else :plans="plans" @created="onMemberCreated" />
@@ -54,7 +56,7 @@ async function loadPlans() {
 }
 
 function onMemberCreated(member) {
-  notice(`申请已进入审核队列，会员编号：${member.id}`)
+  notice(`申请已提交，会员编号：${member.id}`)
   tab.value = 'admin'
 }
 
