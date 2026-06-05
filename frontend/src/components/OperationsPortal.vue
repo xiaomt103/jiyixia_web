@@ -6,7 +6,7 @@
     <section class="node-strip"><article v-for="node in config.nodes" :key="node.title"><b>{{ node.title }}</b><span>{{ node.text }}</span></article></section>
 
     <template v-if="module === 'dashboard'">
-      <section class="dashboard-hero"><div class="store-mark">大</div><div><p>全局经营驾驶舱</p><h2>大囍·美学</h2><span>{{ activeTab }} · {{ activePeriod }} · {{ rangeText }}</span></div><select><option>大囍·美学</option></select></section>
+      <section class="dashboard-hero"><div class="store-mark">{{ storeInitial }}</div><div><p>全局经营驾驶舱</p><h2>{{ storeName }}</h2><span>{{ activeTab }} · {{ activePeriod }} · {{ rangeText }}</span></div><select v-model="storeName"><option>JiYiXia 会员中心</option><option>演示门店</option></select></section>
       <section v-if="activeTab === '数据总览'" class="overview-board">
         <article class="kpi-card" v-for="item in dashboardKpis" :key="item.label"><span>{{ item.label }}</span><b>{{ item.value }}</b><small>{{ item.delta }}</small></article>
         <article class="composition-card"><h3>业绩构成</h3><div class="mini-bars"><p v-for="item in moduleCounts.slice(0, 4)" :key="item.label"><span>{{ item.label }}</span><i :style="{ width: `${Math.max(item.value, 1) * 18}px` }"></i><b>{{ item.value }}</b></p></div></article>
@@ -47,6 +47,7 @@ import { api } from '../api'
 const props = defineProps({ module: { type: String, required: true } })
 const emit = defineEmits(['notice'])
 const records = ref([])
+const storeName = ref('JiYiXia 会员中心')
 const activeTab = ref('')
 const activePeriod = ref('本月')
 const statuses = ['pending', 'active', 'done', 'cancelled']
@@ -73,6 +74,7 @@ const dashboardKpis = computed(() => [{ label: '业绩金额', value: `¥${money
 const reminders = computed(() => [{ label: '重要日期', value: visibleRecords.value.length }, { label: '3日内预约', value: moduleCounts.value.find(item => item.label === 'booking')?.value || 0 }, { label: '超45天未到店', value: byStatus('pending').length }, { label: '充值提醒', value: moduleCounts.value.find(item => item.label === 'finance')?.value || 0 }, { label: '潜在客户', value: byStatus('active').length }])
 const analysisCards = computed(() => [{ label: '完成率', value: percent(byStatus('done').length, visibleRecords.value.length), hint: '已完成 / 当前范围记录' }, { label: '待办压力', value: byStatus('pending').length, hint: '需要优先处理的事项' }, { label: '平均金额', value: `¥${money(Math.round(totalAmount.value / Math.max(visibleRecords.value.length, 1)))}`, hint: '当前范围记录均值' }])
 const dynamics = [{ date: '06/04', text: ' 总览页完成交互升级' }, { date: '05/28', text: ' 报表中心支持 CSV 导出' }, { date: '05/20', text: ' 多模块经营台账上线' }]
+const storeInitial = computed(() => storeName.value.slice(0, 1).toUpperCase())
 const serviceCards = [{ title: '用户端申请', text: '会员提交资料和查询进度' }, { title: '后台控制', text: '审核、套餐和状态流转' }, { title: '开放 API', text: '后续模块可继续接入' }]
 const reportCards = [{ title: '经营日报', desc: '导出当前时间范围的明细台账。', type: 'records' }, { title: '模块汇总', desc: '导出各模块记录数和占比。', type: 'summary' }, { title: '经营分析', desc: '导出完成率、待办和金额分析。', type: 'analysis' }]
 
