@@ -22,16 +22,18 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { api } from '../api'
 
-const props = defineProps({ plans: { type: Array, default: () => [] } })
+const props = defineProps({ plans: { type: Array, default: () => [] }, startMode: { type: String, default: 'apply' } })
 const emit = defineEmits(['created'])
 const tabs = [{ key: 'apply', label: '会员申请' }, { key: 'query', label: '状态查询' }, { key: 'plans', label: '套餐列表' }]
-const mode = ref('apply')
+const mode = ref(props.startMode)
 const form = reactive({ name: '', phone: '', email: '', plan_id: 0 })
 const queryId = ref('')
 const member = ref(null)
+
+watch(() => props.startMode, value => { mode.value = value })
 
 async function submit() { const created = await api.createMember(form); emit('created', created); Object.assign(form, { name: '', phone: '', email: '', plan_id: 0 }) }
 async function query() { member.value = await api.getMember(queryId.value) }
